@@ -13,7 +13,6 @@ body {
   padding-top: 90px; /* Add padding to prevent content from hiding behind fixed navbar */
 }
 
-/* ----- pure black background (video replaced) ----- */
 .bg-black {
   position: fixed;
   top: 0;
