@@ -52,33 +52,35 @@ a {
   color: inherit;
 }
 
-/* Navbar */
+/* Navbar - Improved Responsiveness */
 .nav-bar {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 20px;
+  padding: 12px 16px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
   background: #0A0A0C;
-  /* backdrop-filter: blur(12px); */
-  /* -webkit-backdrop-filter: blur(12px); */
   transition: background 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
+  min-height: 70px;
 }
 
 .nav-links {
   display: flex;
-  gap: 20px;
-  background: #1a1a1a;
-  padding: 10px 25px;
-  border-radius: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
+  gap: 12px 20px;
+  background: #1a1a1a;
+  padding: 8px 20px;
+  border-radius: 50px;
   transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
   border: 1px solid rgba(255,255,255,0.04);
   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  max-width: 95%;
 }
 
 .nav-links a {
@@ -86,20 +88,23 @@ a {
   color: #fff;
   font-weight: 500;
   transition: color 0.2s, background 0.2s, padding 0.2s;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 20px;
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
   color: #1a1a1a;
   background: #ffffff;
-  padding: 4px 14px;
+  padding: 6px 16px;
   font-weight: bolder;
 }
 
 .nav-links span {
   color: #fff;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav-links .mode {
@@ -108,11 +113,13 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #2a2a2a;
   transition: 0.25s;
+  flex-shrink: 0;
+  font-size: 1rem;
 }
 
 .nav-links .mode:hover {
@@ -141,7 +148,7 @@ a {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-top: 80px; /* Adjust this value to control the spacing from the top */
+  margin-top: 80px;
 }
 
 .page-subtitle {
@@ -223,6 +230,7 @@ a {
   font-size: 0.85rem;
   color: #666666;
   margin-bottom: 0.15rem;
+  flex-wrap: wrap;
 }
 
 .note-category {
@@ -304,8 +312,6 @@ body.light-mode .nav-links {
 }
 body.light-mode .nav-bar {
   background: #ffffff;
-  /* backdrop-filter: blur(12px); */
-  /* -webkit-backdrop-filter: blur(12px); */
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
@@ -316,7 +322,7 @@ body.light-mode .nav-links a {
 body.light-mode .nav-links a:hover {
   background: #1a1f2a;
   color: #ffffff;
-  padding: 4px 14px;
+  padding: 6px 16px;
 }
 
 body.light-mode .nav-links .mode {
@@ -397,7 +403,7 @@ body.light-mode .footer-text {
   color: #8a92a8;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE - IMPROVED NAVBAR ===== */
 @media (max-width: 768px) {
   body {
     padding: 1.5rem 1rem;
@@ -409,6 +415,32 @@ body.light-mode .footer-text {
 
   .page-subtitle {
     font-size: 1rem;
+  }
+  
+  .nav-bar {
+    padding: 10px 12px;
+    min-height: 64px;
+  }
+
+  .nav-links {
+    padding: 6px 16px;
+    gap: 8px 14px;
+    max-width: 98%;
+  }
+  
+  .nav-links a {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+  
+  .nav-links a:hover {
+    padding: 5px 14px;
+  }
+  
+  .nav-links .mode {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 
   .tabs {
@@ -436,10 +468,55 @@ body.light-mode .footer-text {
 @media (max-width: 480px) {
   .page-title {
     font-size: 2.2rem;
+    margin-top: 70px;
   }
 
   .page-subtitle {
     font-size: 0.95rem;
+  }
+  
+  .nav-bar {
+    padding: 8px 8px;
+    min-height: 58px;
+  }
+  
+  .nav-links {
+    padding: 5px 12px;
+    gap: 4px 10px;
+    border-radius: 40px;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    justify-content: flex-start;
+  }
+  
+  .nav-links::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  
+  .nav-links a {
+    font-size: 0.78rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .nav-links a:hover {
+    padding: 4px 12px;
+  }
+  
+  .nav-links span {
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+  
+  .nav-links .mode {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
   }
 
   .tabs {
@@ -461,5 +538,47 @@ body.light-mode .footer-text {
   .note-meta {
     font-size: 0.75rem;
     gap: 0.75rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 380px) {
+  .nav-links {
+    padding: 4px 8px;
+    gap: 4px 6px;
+  }
+  
+  .nav-links a {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+  
+  .nav-links a:hover {
+    padding: 3px 8px;
+  }
+  
+  .nav-links .mode {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+  }
+  
+  .nav-links span {
+    font-size: 0.7rem;
+  }
+}
+
+/* For screens that don't support hover (touch devices) */
+@media (hover: none) {
+  .nav-links a:hover {
+    background: transparent;
+    color: #fff;
+    padding: 6px 12px;
+  }
+  
+  body.light-mode .nav-links a:hover {
+    background: transparent;
+    color: #1a1f2a;
+    padding: 6px 12px;
   }
 }
