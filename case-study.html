@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Bencodez-Ventures · Case Study · Benedict</title>
+  <meta name="description" content="Case study: A full-stack e-commerce platform with Node.js, Express, PostgreSQL, and Supabase." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0b0b0b;
+      --card: #17181c;
+      --card-2: #1e2025;
+      --text: #f0f4ff;
+      --text-muted: #b0bbd0;
+      --text-dim: #7d879c;
+      --accent: #8ab4f8;
+      --accent-hover: #b6d4ff;
+      --border: rgba(255, 255, 255, 0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient background */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(138, 180, 248, 0.06) 0%, transparent 60%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Container */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Nav */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 20px;
+      background: rgba(11, 11, 11, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: 0.3s;
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--bg);
+      background: #fff;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 160px 0 80px;
+      text-align: center;
+    }
+    .hero__badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(138, 180, 248, 0.1);
+      color: var(--accent);
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      border: 1px solid rgba(138, 180, 248, 0.2);
+    }
+    .hero__title {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, #b0c7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero__subtitle {
+      font-size: clamp(1rem, 1.6vw, 1.15rem);
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 32px;
+      font-weight: 300;
+    }
+    .hero__meta {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      font-size: 0.9rem;
+    }
+    .hero__meta-item { text-align: left; }
+    .hero__meta-label {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+    .hero__meta-value {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .hero__buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: 0.25s;
+    }
+    .btn-primary {
+      background: #fff;
+      color: var(--bg);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.08);
+    }
+    .btn-primary:hover {
+      transform: scale(1.04);
+      box-shadow: 0 12px 32px rgba(255, 255, 255, 0.15);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Hero image */
+    .hero-image {
+      margin-top: 60px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+    }
+    .hero-image img {
+      width: 100%;
+      display: block;
+    }
+
+    /* Section */
+    .section {
+      padding: 80px 0;
+    }
+    .section__label {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section__title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+    }
+    .section__text {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+    }
+    .section__text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* Feature cards */
+    .feature-card {
+      background: var(--card);
+      padding: 28px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: 0.3s;
+    }
+    .feature-card:hover {
+      border-color: rgba(138, 180, 248, 0.2);
+      transform: translateY(-2px);
+    }
+    .feature-card__icon {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .feature-card__title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-card__text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Tech stack */
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .tech-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      transition: 0.2s;
+    }
+    .tech-pill:hover {
+      border-color: rgba(138, 180, 248, 0.3);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+    .tech-pill i {
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    /* Screenshot gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .gallery__item {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: 0.3s;
+    }
+    .gallery__item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8);
+    }
+    .gallery__item--wide { grid-column: 1 / -1; }
+    .gallery__item img {
+      width: 100%;
+      display: block;
+    }
+    .gallery__caption {
+      padding: 12px 16px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      background: var(--card);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Challenge list */
+    .challenge {
+      background: var(--card);
+      padding: 24px 28px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .challenge__title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .challenge__title::before {
+      content: '→ ';
+      color: var(--accent);
+    }
+    .challenge__text {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Result stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .stat {
+      background: var(--card);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat__value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .stat__label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, rgba(138, 180, 248, 0.08) 0%, rgba(138, 180, 248, 0.02) 100%);
+      border: 1px solid rgba(138, 180, 248, 0.15);
+      padding: 56px 40px;
+      border-radius: 24px;
+      text-align: center;
+      margin: 80px 0;
+    }
+    .cta__title {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .cta__text {
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 28px;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .hero { padding: 130px 0 60px; }
+      .hero__meta { gap: 20px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: 1fr; }
+      .gallery__item--wide { grid-column: auto; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .section { padding: 60px 0; }
+      .cta { padding: 40px 24px; }
+      .nav-links a { padding: 6px 12px; font-size: 0.82rem; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 20px; }
+  </style>
+</head>
+<body>
+  <div class="bg-overlay"></div>
+
+  <!-- Nav -->
+  <nav class="nav-bar">
+    <div class="nav-links">
+      <a href="/index.html">← Back to Work</a>
+      <a href="/about-page/index.html">About</a>
+      <a href="contact/index.html">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero container">
+    <span class="hero__badge">Case Study · 2026</span>
+    <h1 class="hero__title">Bencodez-Ventures</h1>
+    <p class="hero__subtitle">
+      A full-stack e-commerce platform built from scratch — from REST API to admin dashboard — designed for a real Nigerian retail business.
+    </p>
+
+    <div class="hero__meta">
+      <div class="hero__meta-item">
+        <span class="hero__meta-label">Role</span>
+        <span class="hero__meta-value">Solo Full-Stack Developer</span>
+      </div>
+      <div class="hero__meta-item">
+        <span class="hero__meta-label">Duration</span>
+        <span class="hero__meta-value">4 Weeks</span>
+      </div>
+      <div class="hero__meta-item">
+        <span class="hero__meta-label">Status</span>
+        <span class="hero__meta-value">Live &amp; Deployed</span>
+      </div>
+    </div>
+
+    <div class="hero__buttons">
+      <a href="https://bencodez-ventures.vercel.app" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        <i class="fas fa-external-link-alt"></i> View Live Site
+      </a>
+      <a href="https://github.com/oluwafemiadebayo57-dot/bencodez-ventures" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+        <i class="fab fa-github"></i> View Code
+      </a>
+    </div>
+
+    <div class="hero-image">
+      <img src="/images/landing.png" alt="Bencodez-Ventures homepage" />
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Overview -->
+    <section class="section">
+      <span class="section__label">Overview</span>
+      <h2 class="section__title">What is Bencodez-Ventures?</h2>
+      <p class="section__text">
+        Bencodez-Ventures is a <strong>multi-category online store</strong> selling everything from clothes and gadgets to cosmetics, deodorants, and jewellery. The business owner needed a way to <strong>list products, receive orders, and manage inventory</strong> — without relying on expensive third-party platforms.
+      </p>
+      <p class="section__text">
+        I designed and built the entire platform from the ground up: a <strong>secure REST API</strong>, a <strong>PostgreSQL database</strong>, a <strong>customer-facing storefront</strong>, and a <strong>full admin dashboard</strong> for managing the business.
+      </p>
+    </section>
+
+    <!-- Core features -->
+    <section class="section">
+      <span class="section__label">Core Features</span>
+      <h2 class="section__title">What it does</h2>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-user-shield"></i></div>
+          <h3 class="feature-card__title">Secure Authentication</h3>
+          <p class="feature-card__text">User registration and login with bcrypt-hashed passwords and JWT-based sessions.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-store"></i></div>
+          <h3 class="feature-card__title">Product Marketplace</h3>
+          <p class="feature-card__text">Category filters, live search, sorting, and a full product detail page with stock awareness.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-shopping-cart"></i></div>
+          <h3 class="feature-card__title">Cart &amp; Checkout</h3>
+          <p class="feature-card__text">Persistent cart, delivery form, and a full order flow that records purchases to the database.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-chart-line"></i></div>
+          <h3 class="feature-card__title">Admin Dashboard</h3>
+          <p class="feature-card__text">Full control over products, orders, and users — with stats, filters, and status updates.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-image"></i></div>
+          <h3 class="feature-card__title">Image Uploads</h3>
+          <p class="feature-card__text">Admins upload product images directly to Supabase Storage with automatic CDN delivery.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3 class="feature-card__title">Mobile Responsive</h3>
+          <p class="feature-card__text">Works seamlessly from small phones to wide desktops — including the admin panel.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech stack -->
+    <section class="section">
+      <span class="section__label">Tech Stack</span>
+      <h2 class="section__title">What it's built with</h2>
+
+      <div class="tech-grid">
+        <span class="tech-pill"><i class="fab fa-node-js"></i> Node.js</span>
+        <span class="tech-pill"><i class="fas fa-server"></i> Express</span>
+        <span class="tech-pill"><i class="fas fa-database"></i> PostgreSQL</span>
+        <span class="tech-pill"><i class="fas fa-bolt"></i> Supabase</span>
+        <span class="tech-pill"><i class="fas fa-key"></i> JWT</span>
+        <span class="tech-pill"><i class="fas fa-lock"></i> bcrypt</span>
+        <span class="tech-pill"><i class="fas fa-shield-alt"></i> Helmet</span>
+        <span class="tech-pill"><i class="fas fa-check-circle"></i> Joi</span>
+        <span class="tech-pill"><i class="fas fa-upload"></i> Multer</span>
+        <span class="tech-pill"><i class="fab fa-html5"></i> HTML</span>
+        <span class="tech-pill"><i class="fab fa-css3-alt"></i> CSS</span>
+        <span class="tech-pill"><i class="fab fa-js"></i> JavaScript</span>
+        <span class="tech-pill"><i class="fas fa-cloud"></i> Vercel</span>
+        <span class="tech-pill"><i class="fas fa-cloud"></i> Render</span>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="section">
+      <span class="section__label">Gallery</span>
+      <h2 class="section__title">How it looks</h2>
+
+      <div class="gallery">
+        <div class="gallery__item gallery__item--wide">
+          <img src="/images/shop.png" alt="Shop page" />
+          <div class="gallery__caption">Product listing with category filters and live search</div>
+        </div>
+        <div class="gallery__item">
+          <img src="/images/product.png" alt="Product detail" />
+          <div class="gallery__caption">Product detail page</div>
+        </div>
+        <div class="gallery__item">
+          <img src="/images/cart.png" alt="Cart" />
+          <div class="gallery__caption">Cart with quantity controls</div>
+        </div>
+        <div class="gallery__item">
+          <img src="/images/admin.png" alt="Admin dashboard" />
+          <div class="gallery__caption">Admin dashboard with live stats</div>
+        </div>
+        <div class="gallery__item">
+          <img src="/images/product.png" alt="Admin products" />
+          <div class="gallery__caption">Product management with image uploads</div>
+        </div>
+        <div class="gallery__item gallery__item--wide">
+          <img src="/images/mobile.png" alt="Mobile view" />
+          <div class="gallery__caption">Fully responsive — mobile view with hamburger menu</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Challenges -->
+    <section class="section">
+      <span class="section__label">Challenges &amp; Solutions</span>
+      <h2 class="section__title">What I learned building it</h2>
+
+      <div class="challenge">
+        <h3 class="challenge__title">Migrating from local PostgreSQL to Supabase</h3>
+        <p class="challenge__text">
+          Moving the database to the cloud meant my backend could be deployed and reachable from anywhere. The tricky part was adapting connection details, setting up environment variables in Render, and re-running the schema in a fresh cloud instance — plus understanding that the connection uses a pooler URL for IPv4 compatibility.
+        </p>
+      </div>
+
+      <div class="challenge">
+        <h3 class="challenge__title">Persistent image storage on ephemeral hosting</h3>
+        <p class="challenge__text">
+          Render's free tier wipes disk on every deploy — so images saved locally would disappear. I migrated image uploads to Supabase Storage, so every uploaded product image gets a permanent CDN-backed public URL.
+        </p>
+      </div>
+
+      <div class="challenge">
+        <h3 class="challenge__title">Avoiding stale data with async script order</h3>
+        <p class="challenge__text">
+          The header renders dynamically, which means the cart badge element doesn't exist at the exact moment the page's inline script runs. I fixed this by guarding DOM updates with null checks and loading `config.js` before dependent scripts.
+        </p>
+      </div>
+
+      <div class="challenge">
+        <h3 class="challenge__title">Secure by default — every layer</h3>
+        <p class="challenge__text">
+          Parameterized SQL queries prevent injection. JWT protects every authenticated route. Helmet sets secure HTTP headers. Joi validates every request body. bcrypt hashes passwords. Rate limiting blocks brute-force attempts. Every layer assumes the request is untrusted until proven otherwise.
+        </p>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="section">
+      <span class="section__label">Results</span>
+      <h2 class="section__title">By the numbers</h2>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat__value">30+</div>
+          <div class="stat__label">API Endpoints</div>
+        </div>
+        <div class="stat">
+          <div class="stat__value">7</div>
+          <div class="stat__label">Frontend Pages</div>
+        </div>
+        <div class="stat">
+          <div class="stat__value">4</div>
+          <div class="stat__label">Admin Sections</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <h2 class="cta__title">Like what you see?</h2>
+      <p class="cta__text">The live site is up, the code is public, and I'm open to new opportunities.</p>
+      <div class="hero__buttons">
+        <a href="https://bencodez-ventures.vercel.app" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <i class="fas fa-external-link-alt"></i> Visit Live Site
+        </a>
+        <a href="../../contact/index.html" class="btn btn-outline">
+          <i class="fas fa-envelope"></i> Get In Touch
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Benedict · Built with Node.js, PostgreSQL, and too much coffee.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
